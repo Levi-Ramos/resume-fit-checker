@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -13,13 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FitReportView } from "@/components/fit-report";
 import type { FitReport } from "@/lib/types";
 
-export function FitCheckForm({
-  initialResume,
-  hasSavedResume,
-}: {
-  initialResume: string;
-  hasSavedResume: boolean;
-}) {
+export function FitCheckForm({ initialResume = "" }: { initialResume?: string }) {
   const router = useRouter();
   const { isSignedIn } = useUser();
   const [resume, setResume] = useState(initialResume);
@@ -60,8 +53,6 @@ export function FitCheckForm({
     }
   }
 
-  const resumeUnchangedFromProfile = hasSavedResume && resume === initialResume;
-
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto flex max-w-4xl flex-col gap-10 px-6 py-12 md:py-16">
@@ -94,20 +85,9 @@ export function FitCheckForm({
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="resume">Resume</Label>
-                  {isSignedIn && (
+                  {isSignedIn && initialResume && resume === initialResume && (
                     <span className="text-xs text-muted-foreground">
-                      {resumeUnchangedFromProfile ? (
-                        <>
-                          Loaded from{" "}
-                          <Link href="/profile" className="underline underline-offset-2 hover:text-foreground">
-                            your profile
-                          </Link>
-                        </>
-                      ) : !hasSavedResume ? (
-                        <Link href="/profile" className="underline underline-offset-2 hover:text-foreground">
-                          Save to profile
-                        </Link>
-                      ) : null}
+                      Auto-filled from your last check
                     </span>
                   )}
                 </div>

@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider, Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
-import { FileText } from "lucide-react";
 import Link from "next/link";
 import { HistorySidebar } from "@/components/history-sidebar";
 import { HistorySidebarSkeleton } from "@/components/history-sidebar-skeleton";
@@ -41,18 +40,14 @@ export default function RootLayout({
             <HistorySidebar />
           </Suspense>
           <div className="flex min-h-full min-w-0 flex-1 flex-col">
-            <nav className="flex items-center gap-3 border-b border-border px-3 py-3 md:px-6">
+            <nav className="flex h-14 items-center gap-3 border-b border-border px-3 md:px-6">
               <HistoryDrawerTrigger />
               <Link href="/" className="font-mono text-sm font-medium tracking-tight">
                 Resume Fit Checker
               </Link>
               <div className="ml-auto flex items-center gap-4">
                 <Show when="signed-in">
-                  <UserButton>
-                    <UserButton.MenuItems>
-                      <UserButton.Link href="/profile" label="My resume" labelIcon={<FileText className="size-4" />} />
-                    </UserButton.MenuItems>
-                  </UserButton>
+                  <UserButton />
                 </Show>
                 <Show when="signed-out">
                   <SignInButton mode="modal">

@@ -6,7 +6,7 @@ import { embedResumeChunks } from '@/lib/retrieval';
 import { parseJobDescription } from '@/lib/parse-jd';
 import { scoreAllRequirements } from '@/lib/score-fit';
 import { getDb } from '@/db';
-import { fitChecks } from '@/db/schema';
+import { fitChecks, resumeProfiles } from '@/db/schema';
 import { MIN_TEXT_LENGTH } from '@/lib/constants';
 
 function friendlyErrorMessage(error: unknown): string {
@@ -66,19 +66,30 @@ export async function POST(request: Request) {
 
     const { userId } = await auth();
     if (userId) {
-      await getDb()
-        .insert(fitChecks)
-        .values({
-          userId,
-          jdText: jd,
-          score,
-          matchCount,
-          partialCount,
-          gapCount,
-          total: scores.length,
-          results: scores,
-        })
-        .catch((err) => console.error('failed to save fit-check history:', err));
+      const db = getDb();
+      await Promise.all([
+        db
+          .insert(fitChecks)
+          .values({
+            userId,
+            jdText: jd,
+            score,
+            matchCount,
+            partialCount,
+            gapCount,
+            total: scores.length,
+            results: scores,
+          })
+          .catch((err) => console.error('failed to save fit-check history:', err)),
+        db
+          .insert(resumeProfiles)
+          .values({ userId, resumeText: resume })
+          .onConflictDoUpdate({
+            target: resumeProfiles.userId,
+            set: { resumeText: resume, updatedAt: new Date() },
+          })
+          .catch((err) => console.error('failed to save resume to profile:', err)),
+      ]);
     }
 
     return NextResponse.json({

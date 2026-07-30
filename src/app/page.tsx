@@ -1,8 +1,21 @@
-import { getSavedResume } from "@/lib/profile-actions";
+import { eq } from "drizzle-orm";
+import { auth } from "@clerk/nextjs/server";
+import { getDb } from "@/db";
+import { resumeProfiles } from "@/db/schema";
 import { FitCheckForm } from "@/components/fit-check-form";
 
 export default async function Home() {
-  const profile = await getSavedResume();
+  const { userId } = await auth();
 
-  return <FitCheckForm initialResume={profile?.resumeText ?? ""} hasSavedResume={Boolean(profile)} />;
+  let initialResume = "";
+  if (userId) {
+    const [profile] = await getDb()
+      .select()
+      .from(resumeProfiles)
+      .where(eq(resumeProfiles.userId, userId))
+      .limit(1);
+    initialResume = profile?.resumeText ?? "";
+  }
+
+  return <FitCheckForm initialResume={initialResume} />;
 }
