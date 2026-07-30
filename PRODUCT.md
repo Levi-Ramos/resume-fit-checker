@@ -20,15 +20,15 @@ Unlike typical resume-matching tools that ask an LLM to guess an overall fit per
 
 ## Operating Context
 
-A single page: the user pastes raw resume text and raw job description text into two textareas and submits. The backend chunks/embeds the resume, parses the JD into requirements, scores each requirement against retrieved evidence, and returns a report (overall score plus per-requirement match/partial/gap with citations). Signed-in users (via Clerk) have each check saved and viewable later in the History sidebar; signed-out users get an ephemeral one-off check with nothing stored. Signed-in users can also save a resume to their profile (`/profile`, reachable from the account menu) so it auto-fills the Resume field on every future visit instead of being pasted each time.
+A single page: the user pastes raw resume text and raw job description text into two textareas and submits. The backend chunks/embeds the resume, parses the JD into requirements, scores each requirement against retrieved evidence, and returns a report (overall score plus per-requirement match/partial/gap with citations). Signed-in users (via Clerk) have each check saved and viewable later in the History sidebar, and the resume text they used is auto-saved to their profile so it pre-fills the Resume field next visit; signed-out users get an ephemeral one-off check with nothing stored.
 
 ## Capabilities and Constraints
 
 - Resume and JD are pasted as plain text (no file upload); both must be at least 50 characters.
 - Job description requirements are extracted via Gemini; each is scored independently against embedded resume chunks.
 - Overall score = matches + half-credit for partials, over total requirements.
-- History (JD text, score, counts, full results) persists to Neon Postgres via Drizzle, scoped to the signed-in user only.
-- A signed-in user's saved profile resume is a single text blob (one slot per account, no versioning), persisted separately from history. Saving is always an explicit action — editing the Resume field before a fit check never overwrites the saved profile copy.
+- History (JD text, score, counts, full results) persists to Neon Postgres via Drizzle, scoped to the signed-in user only. Each saved check has an editable title (renameable inline from the sidebar row) that falls back to an auto-derived JD preview when unset.
+- A signed-in user's resume is auto-saved to their profile (one slot per account, overwritten) every time they run a fit check — no separate edit/manage screen; the Resume field just silently pre-fills with it on their next visit.
 - Friendly error messages surface for Gemini rate-limiting/overload (429/503) and model-unavailable (404) cases.
 - Open/undecided: no rate limiting observed per user or IP; no resume file upload (PDF/DOCX) support yet.
 
