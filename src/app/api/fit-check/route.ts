@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { APICallError, RetryError } from 'ai';
+import { auth } from '@clerk/nextjs/server';
 import { chunkResume } from '@/lib/chunk';
 import { embedResumeChunks } from '@/lib/retrieval';
 import { parseJobDescription } from '@/lib/parse-jd';
 import { scoreAllRequirements } from '@/lib/score-fit';
-
-const MIN_LENGTH = 50;
+import { getDb } from '@/db';
+import { fitChecks } from '@/db/schema';
+import { MIN_TEXT_LENGTH } from '@/lib/constants';
 
 function friendlyErrorMessage(error: unknown): string {
   const apiError = RetryError.isInstance(error)
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
   if (!resume || !jd) {
     return NextResponse.json({ error: 'Both resume and job description are required.' }, { status: 400 });
   }
-  if (resume.length < MIN_LENGTH || jd.length < MIN_LENGTH) {
+  if (resume.length < MIN_TEXT_LENGTH || jd.length < MIN_TEXT_LENGTH) {
     return NextResponse.json(
       { error: 'Resume and job description both need to be more than a few words — paste the full text.' },
       { status: 400 },
@@ -61,6 +63,23 @@ export async function POST(request: Request) {
     const partialCount = scores.filter((s) => s.verdict === 'partial').length;
     const gapCount = scores.filter((s) => s.verdict === 'gap').length;
     const score = (matchCount + partialCount * 0.5) / scores.length;
+
+    const { userId } = await auth();
+    if (userId) {
+      await getDb()
+        .insert(fitChecks)
+        .values({
+          userId,
+          jdText: jd,
+          score,
+          matchCount,
+          partialCount,
+          gapCount,
+          total: scores.length,
+          results: scores,
+        })
+        .catch((err) => console.error('failed to save fit-check history:', err));
+    }
 
     return NextResponse.json({
       summary: { score, matchCount, partialCount, gapCount, total: scores.length },
