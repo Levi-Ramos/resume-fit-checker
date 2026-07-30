@@ -44,3 +44,12 @@ next-env.d.ts
 # local-only working notes (references confidential job-search context)
 HANDOFF.md
 STUDY-PREP.md
+
+.env*
+
+# agent/skill tooling config (not part of the shipped app)
+.claude/
+.agents/
+.codex/
+.impeccable/
+skills-lock.json
