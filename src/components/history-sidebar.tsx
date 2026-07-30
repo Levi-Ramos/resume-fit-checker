@@ -1,12 +1,9 @@
-import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
-import { Badge } from "@/components/ui/badge";
 import { getDb } from "@/db";
 import { fitChecks } from "@/db/schema";
-import { scoreColorVar } from "@/components/fit-report";
 import { HistorySidebarShell } from "@/components/history-sidebar-shell";
-import { HistoryDeleteButton } from "@/components/history-delete-button";
+import { HistoryRow } from "@/components/history-row";
 import { HistoryClearButton } from "@/components/history-clear-button";
 
 function jdPreview(jdText: string) {
@@ -43,29 +40,13 @@ export async function HistorySidebar() {
       ) : (
         <ul className="flex flex-col gap-0.5">
           {checks.map((check) => (
-            <li key={check.id} className="group/row relative flex items-start gap-1 rounded-lg px-2 py-2 hover:bg-muted">
-              <Link href={`/history/${check.id}`} className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <span className="truncate text-sm" title={jdPreview(check.jdText)}>
-                  {jdPreview(check.jdText)}
-                </span>
-                <span className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="gap-1 font-mono"
-                    style={{ color: scoreColorVar(check.score) }}
-                  >
-                    {Math.round(check.score * 100)}%
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(check.createdAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                </span>
-              </Link>
-              <HistoryDeleteButton id={check.id} />
-            </li>
+            <HistoryRow
+              key={check.id}
+              id={check.id}
+              title={check.title?.trim() || jdPreview(check.jdText)}
+              score={check.score}
+              createdAt={check.createdAt}
+            />
           ))}
         </ul>
       )}

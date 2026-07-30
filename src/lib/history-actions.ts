@@ -25,3 +25,17 @@ export async function clearFitCheckHistory() {
 
   revalidatePath("/", "layout");
 }
+
+export async function updateFitCheckTitle(id: string, title: string) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const trimmed = title.trim();
+
+  await getDb()
+    .update(fitChecks)
+    .set({ title: trimmed || null })
+    .where(and(eq(fitChecks.id, id), eq(fitChecks.userId, userId)));
+
+  revalidatePath("/", "layout");
+}

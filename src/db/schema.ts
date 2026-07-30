@@ -5,6 +5,7 @@ export const fitChecks = pgTable('fit_checks', {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   userId: text('user_id').notNull(),
+  title: text('title'),
   jdText: text('jd_text').notNull(),
   score: real('score').notNull(),
   matchCount: integer('match_count').notNull(),
