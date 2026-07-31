@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/db";
 import { fitChecks } from "@/db/schema";
+import { MAX_TITLE_LENGTH } from "@/lib/constants";
 
 export async function deleteFitCheck(id: string) {
   const { userId } = await auth();
@@ -30,7 +31,7 @@ export async function updateFitCheckTitle(id: string, title: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const trimmed = title.trim();
+  const trimmed = title.trim().slice(0, MAX_TITLE_LENGTH);
 
   await getDb()
     .update(fitChecks)

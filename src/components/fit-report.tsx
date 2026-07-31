@@ -84,15 +84,15 @@ export function FitReportView({ report }: { report: FitReport }) {
                 {i > 0 && <Separator className="my-4" />}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="font-medium">{item.requirement.text}</p>
+                    <p className="min-w-0 font-medium break-words">{item.requirement.text}</p>
                     <Badge variant="outline" className="shrink-0 gap-1.5 font-mono">
                       <Icon className="size-3.5" style={{ color: meta.colorVar }} />
                       {meta.label}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">{item.rationale}</p>
+                  <p className="text-sm break-words text-muted-foreground">{item.rationale}</p>
                   {item.evidenceQuote && (
-                    <p className="border-l-2 border-muted-foreground/30 pl-3 text-sm italic text-muted-foreground">
+                    <p className="border-l-2 border-muted-foreground/30 pl-3 text-sm italic break-words text-muted-foreground">
                       &ldquo;{item.evidenceQuote}&rdquo;
                     </p>
                   )}

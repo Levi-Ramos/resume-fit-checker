@@ -41,7 +41,7 @@ export default async function HistoryDetailPage({
             <CardTitle>Job description</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="max-h-64 overflow-y-auto whitespace-pre-wrap font-mono text-sm text-muted-foreground">
+            <pre className="max-h-64 overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-muted-foreground">
               {check.jdText}
             </pre>
           </CardContent>

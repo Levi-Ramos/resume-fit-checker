@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FitReportView } from "@/components/fit-report";
 import type { FitReport } from "@/lib/types";
+import { MAX_TEXT_LENGTH } from "@/lib/constants";
 
 export function FitCheckForm({ initialResume = "" }: { initialResume?: string }) {
   const router = useRouter();
@@ -28,9 +29,17 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     setReport(null);
+
+    if (resume.length > MAX_TEXT_LENGTH || jd.length > MAX_TEXT_LENGTH) {
+      setError(
+        `Resume and job description must each be under ${MAX_TEXT_LENGTH.toLocaleString()} characters — trim the text and try again.`,
+      );
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await fetch("/api/fit-check", {

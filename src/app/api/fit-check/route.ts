@@ -7,7 +7,7 @@ import { parseJobDescription } from '@/lib/parse-jd';
 import { scoreAllRequirements } from '@/lib/score-fit';
 import { getDb } from '@/db';
 import { fitChecks, resumeProfiles } from '@/db/schema';
-import { MIN_TEXT_LENGTH } from '@/lib/constants';
+import { MAX_TEXT_LENGTH, MIN_TEXT_LENGTH } from '@/lib/constants';
 
 function friendlyErrorMessage(error: unknown): string {
   const apiError = RetryError.isInstance(error)
@@ -39,6 +39,14 @@ export async function POST(request: Request) {
   if (resume.length < MIN_TEXT_LENGTH || jd.length < MIN_TEXT_LENGTH) {
     return NextResponse.json(
       { error: 'Resume and job description both need to be more than a few words — paste the full text.' },
+      { status: 400 },
+    );
+  }
+  if (resume.length > MAX_TEXT_LENGTH || jd.length > MAX_TEXT_LENGTH) {
+    return NextResponse.json(
+      {
+        error: `Resume and job description must each be under ${MAX_TEXT_LENGTH.toLocaleString()} characters — trim the text and try again.`,
+      },
       { status: 400 },
     );
   }
