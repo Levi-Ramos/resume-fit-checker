@@ -149,19 +149,19 @@
   z-index: 0;
 }
 .aurora-a {
-  width: 420px;
-  height: 420px;
-  background: radial-gradient(circle, var(--accent), transparent 60%);
-  top: -140px;
-  right: -100px;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, var(--accent), transparent 45%);
+  top: -220px;
+  right: -220px;
   animation: aurora-drift 18s ease-in-out infinite alternate;
 }
 .aurora-b {
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, var(--primary), transparent 60%);
-  top: 20px;
-  left: -140px;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, var(--primary), transparent 45%);
+  top: -220px;
+  left: -220px;
   animation: aurora-drift 22s ease-in-out infinite alternate-reverse;
 }
 @keyframes aurora-drift {

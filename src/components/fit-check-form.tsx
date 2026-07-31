@@ -65,7 +65,7 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto flex max-w-4xl flex-col gap-10 px-6 py-12 md:py-16">
-        <header className="relative flex flex-col gap-3 overflow-hidden">
+        <header className="relative flex flex-col gap-3 overflow-hidden px-4 pt-6 md:pt-8">
           <div className="aurora aurora-a" aria-hidden="true" />
           <div className="aurora aurora-b" aria-hidden="true" />
           <div className="relative z-10 flex flex-col gap-3">
@@ -73,9 +73,9 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
               Resume <span className="text-primary">Fit Checker</span>
             </h1>
             <p className="max-w-xl text-muted-foreground">
-              Paste a resume and a job description. Each requirement is checked against
-              evidence retrieved from the resume — grounded, cited, and honest about gaps
-              instead of inventing a match, using Gemini for grounded retrieval.
+              Paste a resume and a job description. Each requirement is checked via Gemini
+              against evidence retrieved from the resume — grounded, cited, and honest
+              about gaps instead of inventing a match.
             </p>
           </div>
         </header>
