@@ -72,6 +72,20 @@ export async function POST(request: Request) {
     const gapCount = scores.filter((s) => s.verdict === 'gap').length;
     const score = (matchCount + partialCount * 0.5) / scores.length;
 
+    const hardScores = scores.filter((s) => s.requirement.category === 'hard');
+    const softScores = scores.filter((s) => s.requirement.category === 'soft');
+
+    function categorySummary(subset: typeof scores) {
+      if (subset.length === 0) return null;
+      const m = subset.filter((s) => s.verdict === 'match').length;
+      const p = subset.filter((s) => s.verdict === 'partial').length;
+      const g = subset.filter((s) => s.verdict === 'gap').length;
+      return { score: (m + p * 0.5) / subset.length, matchCount: m, partialCount: p, gapCount: g, total: subset.length };
+    }
+
+    const hard = categorySummary(hardScores);
+    const soft = categorySummary(softScores);
+
     const { userId } = await auth();
     if (userId) {
       const db = getDb();
@@ -86,6 +100,20 @@ export async function POST(request: Request) {
             partialCount,
             gapCount,
             total: scores.length,
+            ...(hard && {
+              hardScore: hard.score,
+              hardMatchCount: hard.matchCount,
+              hardPartialCount: hard.partialCount,
+              hardGapCount: hard.gapCount,
+              hardTotal: hard.total,
+            }),
+            ...(soft && {
+              softScore: soft.score,
+              softMatchCount: soft.matchCount,
+              softPartialCount: soft.partialCount,
+              softGapCount: soft.gapCount,
+              softTotal: soft.total,
+            }),
             results: scores,
           })
           .catch((err) => console.error('failed to save fit-check history:', err)),
@@ -101,7 +129,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      summary: { score, matchCount, partialCount, gapCount, total: scores.length },
+      summary: { score, matchCount, partialCount, gapCount, total: scores.length, hard, soft },
       results: scores,
     });
   } catch (error) {

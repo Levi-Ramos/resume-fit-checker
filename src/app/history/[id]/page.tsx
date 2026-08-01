@@ -55,6 +55,20 @@ export default async function HistoryDetailPage({
               partialCount: check.partialCount,
               gapCount: check.gapCount,
               total: check.total,
+              hard: check.hardTotal != null ? {
+                score: check.hardScore!,
+                matchCount: check.hardMatchCount!,
+                partialCount: check.hardPartialCount!,
+                gapCount: check.hardGapCount!,
+                total: check.hardTotal,
+              } : undefined,
+              soft: check.softTotal != null ? {
+                score: check.softScore!,
+                matchCount: check.softMatchCount!,
+                partialCount: check.softPartialCount!,
+                gapCount: check.softGapCount!,
+                total: check.softTotal,
+              } : undefined,
             },
             results: check.results,
           }}

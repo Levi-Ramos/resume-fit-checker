@@ -4,6 +4,8 @@ import { z } from 'zod';
 import type { JdRequirement } from './parse-jd';
 import type { EmbeddedChunk } from './retrieval';
 import { embedRequirementQueries, retrieveTopK } from './retrieval';
+import type { RequirementScore } from './types';
+export type { RequirementScore };
 
 const TEXT_MODEL = google('gemini-3.5-flash-lite');
 const TOP_K = 4;
@@ -21,13 +23,6 @@ const verdictSchema = z.object({
     }),
   ),
 });
-
-export type RequirementScore = {
-  requirement: JdRequirement;
-  verdict: 'match' | 'partial' | 'gap';
-  evidenceQuote: string | null;
-  rationale: string;
-};
 
 // One requirement-scoring generateText call regardless of requirement count —
 // Gemini free tier caps generateContent at 15 requests/minute, so batching

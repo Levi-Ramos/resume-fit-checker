@@ -12,9 +12,20 @@ export const fitChecks = pgTable('fit_checks', {
   partialCount: integer('partial_count').notNull(),
   gapCount: integer('gap_count').notNull(),
   total: integer('total').notNull(),
+  // per-category breakdowns — null on rows created before this feature shipped
+  hardScore: real('hard_score'),
+  hardMatchCount: integer('hard_match_count'),
+  hardPartialCount: integer('hard_partial_count'),
+  hardGapCount: integer('hard_gap_count'),
+  hardTotal: integer('hard_total'),
+  softScore: real('soft_score'),
+  softMatchCount: integer('soft_match_count'),
+  softPartialCount: integer('soft_partial_count'),
+  softGapCount: integer('soft_gap_count'),
+  softTotal: integer('soft_total'),
   results: jsonb('results').notNull().$type<
     Array<{
-      requirement: { id: string; text: string };
+      requirement: { id: string; text: string; category?: 'hard' | 'soft' };
       verdict: 'match' | 'partial' | 'gap';
       evidenceQuote: string | null;
       rationale: string;
