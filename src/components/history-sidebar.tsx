@@ -1,4 +1,5 @@
 import { desc, eq } from "drizzle-orm";
+import { FileText, LogIn } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/db";
 import { fitChecks } from "@/db/schema";
@@ -17,9 +18,12 @@ export async function HistorySidebar() {
   if (!userId) {
     return (
       <HistorySidebarShell>
-        <p className="px-2 py-4 text-sm text-muted-foreground">
-          Sign in to save and browse your fit-check history.
-        </p>
+        <div className="flex flex-col gap-3 px-2 py-4">
+          <LogIn className="size-4 text-muted-foreground/50" />
+          <p className="text-sm leading-snug text-muted-foreground">
+            Sign in to save every check — scores, requirement breakdowns, and evidence citations from your resume.
+          </p>
+        </div>
       </HistorySidebarShell>
     );
   }
@@ -34,9 +38,12 @@ export async function HistorySidebar() {
   return (
     <HistorySidebarShell headerAction={checks.length > 0 ? <HistoryClearButton /> : undefined}>
       {checks.length === 0 ? (
-        <p className="px-2 py-4 text-sm text-muted-foreground">
-          No history yet. Run a check to get started.
-        </p>
+        <div className="flex flex-col gap-3 px-2 py-4">
+          <FileText className="size-4 text-muted-foreground/50" />
+          <p className="text-sm leading-snug text-muted-foreground">
+            Run a check to see your first result here — full breakdown with grounded evidence.
+          </p>
+        </div>
       ) : (
         <ul className="flex flex-col gap-0.5">
           {checks.map((check) => (
