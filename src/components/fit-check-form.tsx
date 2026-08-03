@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, Info, Loader2, PencilLine, Plus, Upload, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertAction, AlertDescription } from "@/components/ui/alert";
@@ -171,43 +171,43 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
                   ? "Saved to your history — view past checks anytime."
                   : "Nothing is stored unless you sign in first."}
               </CardDescription>
+              <CardAction>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  disabled={!isSignedIn || extracting}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 font-mono"
+                  disabled={!isSignedIn || extracting}
+                  title={!isSignedIn ? "Sign in to upload a resume file" : undefined}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {extracting ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Upload className="size-3.5" />
+                  )}
+                  {extracting ? "Extracting..." : "Upload PDF"}
+                </Button>
+              </CardAction>
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="resume">Resume</Label>
-                    <div className="flex items-center gap-2">
-                      {isSignedIn && initialResume && resume === initialResume && (
-                        <span className="text-xs text-muted-foreground">
-                          Auto-filled from your last check
-                        </span>
-                      )}
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="application/pdf"
-                        onChange={handleFileChange}
-                        disabled={!isSignedIn || extracting}
-                        className="hidden"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="gap-1.5 font-mono"
-                        disabled={!isSignedIn || extracting}
-                        title={!isSignedIn ? "Sign in to upload a resume file" : undefined}
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        {extracting ? (
-                          <Loader2 className="size-3.5 animate-spin" />
-                        ) : (
-                          <Upload className="size-3.5" />
-                        )}
-                        {extracting ? "Extracting..." : "Upload PDF"}
-                      </Button>
-                    </div>
+                    {isSignedIn && initialResume && resume === initialResume && (
+                      <span className="text-xs text-muted-foreground">
+                        Auto-filled from your last check
+                      </span>
+                    )}
                   </div>
                   {extractWarning && (
                     <Alert>
