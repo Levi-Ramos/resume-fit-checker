@@ -8,8 +8,18 @@ import { getDb } from '@/db';
 import { fitChecks, resumeProfiles } from '@/db/schema';
 import { MAX_TEXT_LENGTH, MIN_TEXT_LENGTH } from '@/lib/constants';
 import { friendlyErrorMessage } from '@/lib/gemini-errors';
+import { fitCheckLimiter } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '127.0.0.1';
+  const { success, reset } = await fitCheckLimiter.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Too many requests — please wait a moment and try again.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((reset - Date.now()) / 1000)) } },
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const resume = typeof body?.resume === 'string' ? body.resume.trim() : '';
   const jd = typeof body?.jd === 'string' ? body.jd.trim() : '';

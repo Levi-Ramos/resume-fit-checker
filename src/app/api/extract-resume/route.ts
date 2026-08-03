@@ -4,11 +4,20 @@ import { chunkResume } from '@/lib/chunk';
 import { extractResumeText } from '@/lib/extract-resume';
 import { friendlyErrorMessage } from '@/lib/gemini-errors';
 import { MAX_RESUME_FILE_BYTES } from '@/lib/constants';
+import { extractLimiter } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Sign in to upload a resume file.' }, { status: 401 });
+  }
+
+  const { success, reset } = await extractLimiter.limit(userId);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Too many requests — please wait a moment and try again.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((reset - Date.now()) / 1000)) } },
+    );
   }
 
   const formData = await request.formData().catch(() => null);
