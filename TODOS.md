@@ -4,6 +4,8 @@
 
 ### Backfill tests for pre-existing untested code
 
+**Status:** DONE (2026-08-03) — 34 tests across `chunk.ts`, `parse-jd.ts`, `score-fit.ts`, `fit-check/route.ts`, `extract-resume/route.ts`. All passing.
+
 **What:** Write tests for `chunkResume` (`src/lib/chunk.ts`), `parseJobDescription` (`src/lib/parse-jd.ts`), `scoreAllRequirements` (`src/lib/score-fit.ts`), and `POST /api/fit-check` (`src/app/api/fit-check/route.ts`).
 
 **Why:** Vitest lands with the resume-upload PR (`/plan-eng-review`, 2026-08-02) but is scoped only to that feature's new code. These four are the core grounding/scoring functions — the same class of risk the upload review flagged for new extraction code, just pre-existing and currently untested.
@@ -17,6 +19,8 @@
 ## Infrastructure
 
 ### Rate limiting for AI-calling endpoints
+
+**Status:** DONE (2026-08-03) — Upstash Redis sliding-window: 10 req/min per IP on `/api/fit-check`, 20 req/min per userId on `/api/extract-resume`. Returns 429 + `Retry-After`. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` env vars.
 
 **What:** Add rate limiting (per-IP and/or per-user) to `/api/fit-check` and `/api/extract-resume`.
 
