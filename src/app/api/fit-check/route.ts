@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { APICallError, RetryError } from 'ai';
 import { auth } from '@clerk/nextjs/server';
 import { chunkResume } from '@/lib/chunk';
 import { embedResumeChunks } from '@/lib/retrieval';
@@ -8,25 +7,7 @@ import { scoreAllRequirements } from '@/lib/score-fit';
 import { getDb } from '@/db';
 import { fitChecks, resumeProfiles } from '@/db/schema';
 import { MAX_TEXT_LENGTH, MIN_TEXT_LENGTH } from '@/lib/constants';
-
-function friendlyErrorMessage(error: unknown): string {
-  const apiError = RetryError.isInstance(error)
-    ? error.errors.find((e) => APICallError.isInstance(e))
-    : APICallError.isInstance(error)
-      ? error
-      : undefined;
-
-  if (apiError && APICallError.isInstance(apiError)) {
-    if (apiError.statusCode === 429 || apiError.statusCode === 503) {
-      return 'The Gemini API is rate-limited or overloaded right now. Please wait a moment and try again.';
-    }
-    if (apiError.statusCode === 404) {
-      return 'The configured Gemini model is unavailable. Check the model ID is still current.';
-    }
-  }
-
-  return 'Something went wrong while checking fit. Please try again.';
-}
+import { friendlyErrorMessage } from '@/lib/gemini-errors';
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);

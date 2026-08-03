@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Info, Loader2, PencilLine, Plus, X } from "lucide-react";
+import { AlertCircle, Info, Loader2, PencilLine, Plus, Upload, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertAction, AlertDescription } from "@/components/ui/alert";
 import { FitReportView } from "@/components/fit-report";
 import type { FitReport } from "@/lib/types";
-import { MAX_TEXT_LENGTH } from "@/lib/constants";
+import { MAX_RESUME_FILE_BYTES, MAX_TEXT_LENGTH } from "@/lib/constants";
 
 export function FitCheckForm({ initialResume = "" }: { initialResume?: string }) {
   const router = useRouter();
@@ -22,7 +22,11 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showEvidenceHint, setShowEvidenceHint] = useState(false);
+  const [extracting, setExtracting] = useState(false);
+  const [extractError, setExtractError] = useState<string | null>(null);
+  const [extractWarning, setExtractWarning] = useState<string | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!localStorage.getItem("rfc:hint:evidence")) setShowEvidenceHint(true);
@@ -64,6 +68,43 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setExtractError(null);
+    setExtractWarning(null);
+
+    if (file.type !== "application/pdf") {
+      setExtractError("Only PDF files are supported.");
+      return;
+    }
+    if (file.size > MAX_RESUME_FILE_BYTES) {
+      setExtractError(`File is too large — must be under ${MAX_RESUME_FILE_BYTES / (1024 * 1024)}MB.`);
+      return;
+    }
+
+    setExtracting(true);
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+      const res = await fetch("/api/extract-resume", { method: "POST", body: formData });
+      const body = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(body?.error ?? `Request failed (${res.status})`);
+      }
+
+      setResume(body.text ?? "");
+      if (body.warning) setExtractWarning(body.warning);
+    } catch (err) {
+      setExtractError(err instanceof Error ? err.message : "Something went wrong extracting that PDF.");
+    } finally {
+      setExtracting(false);
     }
   }
 
@@ -136,12 +177,50 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="resume">Resume</Label>
-                    {isSignedIn && initialResume && resume === initialResume && (
-                      <span className="text-xs text-muted-foreground">
-                        Auto-filled from your last check
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {isSignedIn && initialResume && resume === initialResume && (
+                        <span className="text-xs text-muted-foreground">
+                          Auto-filled from your last check
+                        </span>
+                      )}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handleFileChange}
+                        disabled={!isSignedIn || extracting}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5 font-mono"
+                        disabled={!isSignedIn || extracting}
+                        title={!isSignedIn ? "Sign in to upload a resume file" : undefined}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        {extracting ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <Upload className="size-3.5" />
+                        )}
+                        {extracting ? "Extracting..." : "Upload PDF"}
+                      </Button>
+                    </div>
                   </div>
+                  {extractWarning && (
+                    <Alert>
+                      <Info className="size-4" />
+                      <AlertDescription>{extractWarning}</AlertDescription>
+                    </Alert>
+                  )}
+                  {extractError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="size-4" />
+                      <AlertDescription>{extractError}</AlertDescription>
+                    </Alert>
+                  )}
                   <Textarea
                     id="resume"
                     value={resume}

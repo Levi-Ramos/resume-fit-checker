@@ -53,3 +53,7 @@ STUDY-PREP.md
 .codex/
 .impeccable/
 skills-lock.json
+
+# clerk configuration (can include secrets)
+/.clerk/
+.gstack/
