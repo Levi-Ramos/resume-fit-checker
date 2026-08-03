@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { auth } from '@clerk/nextjs/server';
 import { extractResumeText } from '@/lib/extract-resume';
 import { POST } from './route';
@@ -11,6 +11,17 @@ vi.mock('@clerk/nextjs/server', () => ({
 vi.mock('@/lib/extract-resume', () => ({
   extractResumeText: vi.fn(),
 }));
+
+const mockExtractLimit = vi.fn(() =>
+  Promise.resolve({ success: true, limit: 20, remaining: 19, reset: Date.now() + 60_000 }),
+);
+vi.mock('@/lib/rate-limit', () => ({
+  extractLimiter: { limit: (...args: unknown[]) => mockExtractLimit(...args) },
+}));
+
+beforeEach(() => {
+  mockExtractLimit.mockResolvedValue({ success: true, limit: 20, remaining: 19, reset: Date.now() + 60_000 });
+});
 
 function requestWithFile(file: File | null) {
   const formData = new FormData();
@@ -68,5 +79,15 @@ describe('POST /api/extract-resume', () => {
 
     expect(res.status).toBe(200);
     expect(body.warning).toBeDefined();
+  });
+
+  it('returns 429 when rate limit is exceeded', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'user_1' } as never);
+    mockExtractLimit.mockResolvedValue({ success: false, limit: 20, remaining: 0, reset: Date.now() + 30_000 });
+
+    const res = await POST(requestWithFile(new File(['x'], 'r.pdf', { type: 'application/pdf' })));
+
+    expect(res.status).toBe(429);
+    expect(res.headers.get('Retry-After')).toBeTruthy();
   });
 });
