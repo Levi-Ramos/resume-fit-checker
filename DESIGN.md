@@ -2,18 +2,18 @@
 name: Resume Fit Checker
 description: Grounded, citation-backed resume-to-job-description fit checking with Gemini.
 colors:
-  background: "#0a0d14"
-  panel: "#12161f"
-  well: "#161b26"
-  border: "#1f2632"
-  fog: "#e8edf4"
-  muted-slate: "#93a0b4"
-  primary: "#4ade80"
-  primary-ink: "#06170e"
-  accent: "#22d3ee"
-  accent-ink: "#06232a"
-  alert-red: "#f87171"
-  amber-partial: "#e0af68"
+  background: "#0b0f0d"
+  panel: "#121815"
+  well: "#151d19"
+  border: "rgba(255,255,255,0.08)"
+  fog: "#eef1ef"
+  muted-slate: "#8a9992"
+  primary: "#34d399"
+  primary-ink: "#06140d"
+  accent: "#1f9d6f"
+  accent-ink: "#06140d"
+  alert-red: "#e0685f"
+  amber-partial: "#eab86e"
 typography:
   display:
     fontFamily: "var(--font-geist-sans), Geist, ui-sans-serif, system-ui"
@@ -88,43 +88,43 @@ components:
 
 **Creative North Star: "The Diagnostic Readout"**
 
-Resume Fit Checker reads like an instrument panel, not a marketing page: a near-black navy canvas, monospace numerals for anything measured, and exactly two saturated colors — signal green and cyan — spent with intent rather than sprinkled for decoration. The system exists to deliver a verdict the user can trust (match / partial / gap, each with a citation), so the interface stays clinical and calm where it reports data, and reserves warmth for the moment it delivers good news.
+Resume Fit Checker reads like an instrument panel, not a marketing page: a near-black emerald-tinted canvas, monospace numerals for anything measured, and one saturated color family — signal emerald — spent with intent rather than sprinkled for decoration. The system exists to deliver a verdict the user can trust (match / partial / gap, each with a citation), so the interface stays clinical and calm where it reports data, and reserves warmth for the moment it delivers good news.
 
-Color is quiet and restrained by design: the panel/well/border layers of navy do almost all the visual work, and saturated color is spent only on the primary action and the three verdict states (green = match, amber = partial, red = gap). Nothing else on screen competes with those signals for attention.
+Color is quiet and restrained by design: the panel/well/border layers of near-black do almost all the visual work, and saturated color is spent only on the primary action and the three verdict states (green = match, amber = partial, red = gap). Nothing else on screen competes with those signals for attention.
 
-The codebase also defines a light palette (`:root`, un-namespaced), but `<html>` hardcodes `className="dark"` unconditionally — there is currently no code path that renders it. This document treats the `.dark` palette as the sole canonical, shipped visual system; the light tokens are dormant and should not be trusted as a secondary theme until something actually toggles them.
+The codebase also defines a light palette (`:root`, un-namespaced), but `<html>` hardcodes `className="dark"` unconditionally — there is currently no code path that renders it. This document treats the `.dark` palette as the sole canonical, shipped visual system; the light tokens are dormant and should not be trusted as a secondary theme until something actually toggles them. (A same-system light variant was explored during the Aug 2026 redesign but not wired up — see Layout.)
 
 **Key Characteristics:**
-- Forced dark, near-black navy base — not a "dark mode option," the only mode.
+- Forced dark, near-black base with an emerald tint — not a "dark mode option," the only mode.
 - Monospace reserved for measured/technical content (scores, badges, the nav wordmark, form inputs, the primary CTA); sans-serif carries all prose.
 - Flat by construction: depth comes from tonal layering and hairline rings, never drop shadows.
-- Two saturated brand colors (signal green, signal cyan) plus three status colors that double as the verdict vocabulary.
+- One saturated brand hue (signal emerald, in two shades) plus three status colors that double as the verdict vocabulary.
 
 ## Colors
 
-The palette is almost monochrome navy at rest; color appears only to mean something.
+The palette is almost monochrome near-black at rest; color appears only to mean something.
 
 ### Primary
-- **Signal Green** (`#4ade80`): the primary action color — the "Check fit" button, focus rings, the nav accent — and, not coincidentally, the same value as the "match" verdict. Green means both "go" and "good."
+- **Signal Emerald** (`#34d399`): the primary action color — the "Check fit" button, focus rings, the nav accent — and, not coincidentally, the same value as the "match" verdict. Emerald means both "go" and "good."
 
 ### Secondary
-- **Signal Cyan** (`#22d3ee`): the one decorative flourish — the hero's aurora glow. It never appears on an interactive control; it marks the page as a technical surface, not a status.
+- **Deep Emerald** (`#1f9d6f`): a darker shade of the same hue, used only for the hero's aurora glow (paired with Signal Emerald for a two-tone blur). It never appears on an interactive control; it marks the page as a technical surface, not a status.
 
 ### Neutral
-- **Deep Space Navy** (`#0a0d14`): page background.
-- **Panel Navy** (`#12161f`): card, popover, and modal surfaces — one step lighter than the page so containers read as raised without a shadow.
-- **Slate Well** (`#161b26`): secondary/muted surface — secondary buttons, muted chips, disabled input fill.
-- **Hairline Slate** (`#1f2632`): all borders and input strokes.
-- **Fog White** (`#e8edf4`): primary text.
-- **Muted Slate** (`#93a0b4`): secondary/caption text (descriptions, timestamps, rationale copy).
+- **Deep Space** (`#0b0f0d`): page background — near-black with a faint green tint rather than the old blue-black.
+- **Panel** (`#121815`): card, popover, and modal surfaces — one step lighter than the page so containers read as raised without a shadow.
+- **Well** (`#151d19`): secondary/muted surface — secondary buttons, muted chips, disabled input fill, hover rows.
+- **Hairline** (`rgba(255,255,255,0.08)`, translucent): all borders and input strokes — translucent-on-dark rather than a flat hex, so it reads correctly against both Panel and Well.
+- **Fog White** (`#eef1ef`): primary text.
+- **Muted Slate** (`#8a9992`): secondary/caption text (descriptions, timestamps, rationale copy).
 
 ### Status (the verdict vocabulary)
-- **Signal Green** (`#4ade80` — same token as Primary): "match."
-- **Amber Partial** (`#e0af68`): "partial" — the one hue that exists solely for this state; don't reuse it elsewhere.
-- **Alert Red** (`#f87171` — same token as Destructive): "gap" / destructive action / form error.
+- **Signal Emerald** (`#34d399` — same token as Primary): "match."
+- **Amber Partial** (`#eab86e`): "partial" — the one hue that exists solely for this state; don't reuse it elsewhere.
+- **Alert Red** (`#e0685f` — same token as Destructive): "gap" / destructive action / form error.
 
 ### Named Rules
-**The Verdict-Only Color Rule.** Outside the primary CTA and the header's aurora flourish, saturated color appears only to report a match/partial/gap verdict or a destructive action. A card, badge, or button that isn't reporting one of those states stays navy/slate/fog.
+**The Verdict-Only Color Rule.** Outside the primary CTA and the header's aurora flourish, saturated color appears only to report a match/partial/gap verdict or a destructive action. A card, badge, or button that isn't reporting one of those states stays near-black/well/fog.
 
 ## Typography
 
@@ -134,8 +134,8 @@ The palette is almost monochrome navy at rest; color appears only to mean someth
 **Character:** Geist Sans carries every sentence a human reads (headings, descriptions, rationale); Geist Mono is reserved for anything measured or branded — as if the numbers and labels came off an instrument rather than a copywriter.
 
 ### Hierarchy
-- **Display** (600, `text-3xl` → `text-4xl` i.e. 1.875rem → 2.25rem, tight tracking): the page's single h1 ("Resume Fit Checker").
-- **Title** (500, 1rem / `leading-snug`): card titles ("Check a fit", "Overall fit", "Requirement breakdown").
+- **Display** (600, `text-3xl` → `text-4xl` i.e. 1.875rem → 2.25rem, tight tracking): the page's single h1, a task sentence ("Check how well your resume fits the job.") rather than the product name — the wordmark carries branding in the nav instead.
+- **Title** (500, 1rem / `leading-snug`): card titles ("Overall fit", "Requirement breakdown", "Job description"). The empty-state form card is titleless by design — it opens straight on the "Resume" field label, mirroring the redesign's flatter hero card.
 - **Body** (400, 0.875rem–1rem): form labels, requirement text, rationale paragraphs.
 - **Caption** (400, 0.875rem, Muted Slate): descriptions, timestamps, evidence quotes (rendered italic with a left rule).
 - **Readout** (600, `text-5xl`/3rem, mono, tabular-nums): the one big number on screen — the overall fit percentage.
@@ -148,11 +148,14 @@ The palette is almost monochrome navy at rest; color appears only to mean someth
 
 The app shell is a persistent-sidebar layout, not a single centered column: on desktop (`md:` and up) a collapsible History rail sits flush against the left viewport edge, full height, with the nav bar and page content filling the remaining width. Below `md`, the rail becomes an off-canvas overlay drawer (see Components → Sidebar) reached via a trigger in the nav; the page itself reverts to a plain vertical stack.
 
-Inside the content column, pages stay single-column, content-first: a `max-w-4xl` block centered with `px-6` and generous vertical rhythm (`py-12` → `py-16` at `md:`, `gap-6`–`gap-10` between blocks). The one two-column moment is the input form (resume vs. job description textareas, `grid-cols-1` → `md:grid-cols-2`); everything else — the score card, the requirement list — stays single-column so it reads top-to-bottom like a report. Breakpoint behavior is mobile-first with a single `md:` (768px) step-up; there is no desktop-specific widening beyond the `max-w-4xl` cap on content.
+Inside the content column, pages stay single-column, content-first: a `max-w-4xl` block centered with `px-6` and generous vertical rhythm (`py-12` → `py-16` at `md:`, `gap-6`–`gap-10` between blocks). The one two-column moment is the empty-state hero (`md:flex-row`): the task headline and subcopy sit to the left, the Resume/JD form card to the right — the two fields inside that card stack vertically now (single column), since the side-by-side moment moved up a level to headline-vs-form. Everything else — the checking screen, the score card, the requirement list — stays single-column so it reads top-to-bottom like a report. Breakpoint behavior is mobile-first with a single `md:` (768px) step-up, stacking the hero into headline-above-form; there is no desktop-specific widening beyond the `max-w-4xl` cap on content.
+
+### Named Rules
+**The Checking Screen.** Submitting the form replaces the hero (headline + form card) with a full-width, vertically-centered takeover: a thin top progress rail plus a 4-step checklist ("Parsing resume" → "Extracting requirements" → "Retrieving evidence" → "Scoring overall fit"). The steps advance on a fixed cosmetic timer, not real backend events — `/api/fit-check` is a single request/response with no intermediate progress to report — so treat the step count as a perceived-progress device, not telemetry. It disappears the moment the request settles, into either the report or an error.
 
 ## Elevation & Depth
 
-Flat by construction — there are no `box-shadow` rules anywhere in the component set. Depth comes from tonal layering (Panel Navy sits one step lighter than Deep Space Navy) plus a `ring-1 ring-foreground/10` hairline on cards and dialogs, not from shadow. Focus states use a ring (`ring-3 ring-ring/50`), never a glow-via-shadow.
+Flat by construction — there are no `box-shadow` rules anywhere in the component set. Depth comes from tonal layering (Panel sits one step lighter than Deep Space) plus a `ring-1 ring-foreground/10` hairline on cards and dialogs, not from shadow. Focus states use a ring (`ring-3 ring-ring/50`), never a glow-via-shadow.
 
 ### Named Rules
 **The Flat-By-Default Rule.** Depth is tonal contrast and a hairline ring, never a drop shadow. If a component needs to look "raised," lighten its surface one tone and add the ring — don't reach for `box-shadow`.
@@ -165,7 +168,7 @@ Interactive controls (buttons, inputs, textareas) use a 12px radius (`rounded-lg
 
 ### Buttons
 - **Shape:** 12px radius (`rounded-lg`).
-- **Primary:** Signal Green fill, near-black-green text (`#06170e`), `hover:bg-primary/80`. Used for the single primary action per screen (e.g. "Check fit").
+- **Primary:** Signal Emerald fill, near-black-emerald text (`#06140d`), `hover:bg-primary/80`. Used for the single primary action per screen (e.g. "Check fit").
 - **Outline / Ghost:** transparent/near-background fill, hairline border (outline only), hover fills to Slate Well. Used for secondary actions (sign-in, cancel, delete-row).
 - **Destructive:** Alert Red at 10% opacity fill with Alert Red text (not a solid red fill) — a quieter destructive treatment that still reads as dangerous without shouting.
 - **Active/Focus:** active state nudges the button down 1px (`translate-y-px`); focus adds a 3px ring at 50% opacity in the current variant's color.
@@ -175,9 +178,9 @@ Interactive controls (buttons, inputs, textareas) use a 12px radius (`rounded-lg
 
 ### Cards / Containers
 - **Corner Style:** ~16.8px (`rounded-xl`).
-- **Background:** Panel Navy, no border — separated from the page only by tone and the hairline ring.
+- **Background:** Panel, no border — separated from the page only by tone and the hairline ring.
 - **Shadow Strategy:** none — see Elevation & Depth.
-- **Footer:** when present, a hairline top border plus Slate Well background at 50% opacity, rounded to match the card's bottom corners.
+- **Footer:** the `CardFooter` primitive (hairline top border + Well background at 50% opacity) still exists in `ui/card.tsx` but nothing currently uses it — the form card's submit button now lives inline in `CardContent`, flush with the rest of the stack, matching the redesign's flatter card (no divider line above the button).
 
 ### Inputs / Textareas
 - **Style:** transparent fill, hairline border, 12px radius, mono text (`font-mono text-sm`) — the two resume/JD paste fields are the one place body input intentionally borrows the "instrument" mono voice instead of sans.
@@ -199,14 +202,12 @@ Interactive controls (buttons, inputs, textareas) use a 12px radius (`rounded-lg
 - **States:** signed-out shows a one-line sign-in prompt in place of the list; signed-in-empty shows "No history yet"; a header "Clear all" icon action appears only when there's history to clear.
 
 ### Signature Component: The Aurora Backdrop
-
-### Signature Component: The Aurora Backdrop
-A soft, blurred radial-gradient glow (cyan + green, `blur(90px)`, ~45% opacity) drifting slowly behind the hero heading only — the one purely decorative, non-data element in the system. It respects `prefers-reduced-motion` (animation disabled). Reserve this for the single hero moment; it is not a general-purpose background treatment.
+A soft, blurred radial-gradient glow (two shades of emerald, `blur(90px)`, ~45% opacity) drifting slowly behind the hero heading and form only — the one purely decorative, non-data element in the system. It respects `prefers-reduced-motion` (animation disabled). Reserve this for the single hero moment; it is not a general-purpose background treatment.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** reserve saturated color (green/cyan/amber/red) for the primary action, the aurora hero flourish, and verdict states — nothing else.
+- **Do** reserve saturated color (emerald/amber/red) for the primary action, the aurora hero flourish, and verdict states — nothing else.
 - **Do** render any measured number (scores, counts) in mono with `tabular-nums`.
 - **Do** build depth with tonal layering + a `ring-foreground/10` hairline, never a `box-shadow`.
 - **Do** keep the destructive button's fill translucent (Alert Red at 10-20% opacity), not a solid red block.
@@ -215,6 +216,6 @@ A soft, blurred radial-gradient glow (cyan + green, `blur(90px)`, ~45% opacity) 
 ### Don't:
 - **Don't** add drop shadows to cards, popovers, or buttons — it breaks the flat-instrument read established by every existing surface.
 - **Don't** introduce a light-mode toggle without first reconciling the dormant `:root` light tokens — they exist in code but have never been visually verified since `<html>` forces `.dark` unconditionally.
-- **Don't** use Signal Cyan on an interactive control or verdict badge — it's reserved for the single hero decoration, not for buttons, links, or status.
+- **Don't** fabricate real numbers into the checking screen (e.g. "requirement 7 of 12") — the step list is a cosmetic proxy for an atomic request, not a live progress feed; keep step labels generic.
 - **Don't** reintroduce a kicker/eyebrow line above the h1 — it's a banned pattern in this system; let the heading carry its own weight.
 - **Don't** apply the mono font to prose (headings, descriptions, rationale text) — mono is earned only by measured numbers, labels, the wordmark, and the paste inputs.

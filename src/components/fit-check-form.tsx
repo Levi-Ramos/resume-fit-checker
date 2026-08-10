@@ -2,16 +2,63 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Info, Loader2, PencilLine, Plus, Upload, X } from "lucide-react";
+import { AlertCircle, Check, Info, Loader2, PencilLine, Plus, Upload, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertAction, AlertDescription } from "@/components/ui/alert";
 import { FitReportView } from "@/components/fit-report";
 import type { FitReport } from "@/lib/types";
 import { MAX_RESUME_FILE_BYTES, MAX_TEXT_LENGTH } from "@/lib/constants";
+
+const CHECK_STEPS = [
+  "Parsing resume",
+  "Extracting requirements",
+  "Retrieving evidence",
+  "Scoring overall fit",
+];
+
+// ponytail: step timing is a fixed cosmetic schedule, not real backend progress —
+// the API is a single request/response with no intermediate events. Upgrade to
+// real progress if/when fit-check streams status.
+function CheckingProgress({ step }: { step: number }) {
+  const pct = ((step + 1) / CHECK_STEPS.length) * 100;
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-10 px-4 py-20">
+      <div className="h-0.5 w-full max-w-sm overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="flex w-full max-w-sm flex-col gap-4">
+        <span className="font-mono text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Checking fit
+        </span>
+        <ul className="flex flex-col gap-3.5">
+          {CHECK_STEPS.map((label, i) => (
+            <li key={label} className="flex items-center gap-3">
+              {i < step ? (
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <Check className="size-3" />
+                </span>
+              ) : i === step ? (
+                <span className="size-5 shrink-0 rounded-full border-2 border-primary" />
+              ) : (
+                <span className="size-5 shrink-0 rounded-full border border-border" />
+              )}
+              <span className={`text-sm ${i <= step ? "text-foreground" : "text-muted-foreground"}`}>
+                {label}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
 
 export function FitCheckForm({ initialResume = "" }: { initialResume?: string }) {
   const router = useRouter();
@@ -20,6 +67,7 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
   const [jd, setJd] = useState("");
   const [report, setReport] = useState<FitReport | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkingStep, setCheckingStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [showEvidenceHint, setShowEvidenceHint] = useState(false);
   const [extracting, setExtracting] = useState(false);
@@ -49,6 +97,12 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
     }
 
     setLoading(true);
+    setCheckingStep(0);
+    const stepTimers = [
+      setTimeout(() => setCheckingStep(1), 700),
+      setTimeout(() => setCheckingStep(2), 1900),
+      setTimeout(() => setCheckingStep(3), 3600),
+    ];
 
     try {
       const res = await fetch("/api/fit-check", {
@@ -67,6 +121,7 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
+      stepTimers.forEach(clearTimeout);
       setLoading(false);
     }
   }
@@ -110,23 +165,10 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex max-w-4xl flex-col gap-10 px-6 py-12 md:py-16">
-        <header className="relative flex flex-col gap-3 overflow-hidden px-4 pt-6 md:pt-8">
-          <div className="aurora aurora-a" aria-hidden="true" />
-          <div className="aurora aurora-b" aria-hidden="true" />
-          <div className="relative z-10 flex flex-col gap-3">
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Resume <span className="text-primary">Fit Checker</span>
-            </h1>
-            <p className="max-w-xl text-muted-foreground">
-              Paste a resume and a job description. Each requirement is checked via Gemini
-              against evidence retrieved from the resume — grounded, cited, and honest
-              about gaps instead of inventing a match.
-            </p>
-          </div>
-        </header>
-
-        {report ? (
+      <div className="mx-auto flex max-w-4xl flex-1 flex-col gap-10 px-6 py-12 md:py-16">
+        {loading ? (
+          <CheckingProgress step={checkingStep} />
+        ) : report ? (
           <div className="flex flex-col gap-3 rounded-xl border border-border px-4 py-3">
             <p className="min-w-0 truncate font-mono text-xs text-muted-foreground">
               {jd.trimStart().slice(0, 80)}{jd.trimStart().length > 80 ? "…" : ""}
@@ -163,100 +205,104 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
             </div>
           </div>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Check a fit</CardTitle>
-              <CardDescription>
-                {isSignedIn
-                  ? "Saved to your history — view past checks anytime."
-                  : "Nothing is stored unless you sign in first."}
-              </CardDescription>
-              <CardAction>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleFileChange}
-                  disabled={!isSignedIn || extracting}
-                  className="hidden"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 font-mono"
-                  disabled={!isSignedIn || extracting}
-                  title={!isSignedIn ? "Sign in to upload a resume file" : undefined}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {extracting ? (
-                    <Loader2 className="size-3.5 animate-spin" />
-                  ) : (
-                    <Upload className="size-3.5" />
-                  )}
-                  {extracting ? "Extracting..." : "Upload PDF"}
-                </Button>
-              </CardAction>
-            </CardHeader>
-            <form onSubmit={handleSubmit}>
-              <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <Label htmlFor="resume">Resume</Label>
+          <>
+            <header className="relative flex flex-col gap-8 overflow-hidden px-4 pt-6 md:flex-row md:items-start md:gap-14 md:pt-10">
+              <div className="aurora aurora-a" aria-hidden="true" />
+              <div className="aurora aurora-b" aria-hidden="true" />
+              <div className="relative z-10 flex flex-col gap-3 md:max-w-xs md:pt-2">
+                <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                  Check how well your <span className="text-primary">resume fits</span> the job.
+                </h1>
+                <p className="text-muted-foreground">
+                  Each requirement is checked against evidence retrieved from your resume —
+                  grounded, cited, and honest about gaps instead of inventing a match.
+                </p>
+              </div>
+
+              <Card className="relative z-10 max-w-md flex-1 self-start">
+                <form onSubmit={handleSubmit}>
+                  <CardContent className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label htmlFor="resume">Resume</Label>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handleFileChange}
+                        disabled={!isSignedIn || extracting}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5 font-mono"
+                        disabled={!isSignedIn || extracting}
+                        title={!isSignedIn ? "Sign in to upload a resume file" : undefined}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        {extracting ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <Upload className="size-3.5" />
+                        )}
+                        {extracting ? "Extracting..." : "Upload PDF"}
+                      </Button>
+                    </div>
                     {isSignedIn && initialResume && resume === initialResume && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="-mt-2 text-xs text-muted-foreground">
                         Auto-filled from your last check
                       </span>
                     )}
-                  </div>
-                  {extractWarning && (
-                    <Alert>
-                      <Info className="size-4" />
-                      <AlertDescription>{extractWarning}</AlertDescription>
-                    </Alert>
-                  )}
-                  {extractError && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="size-4" />
-                      <AlertDescription>{extractError}</AlertDescription>
-                    </Alert>
-                  )}
-                  <Textarea
-                    id="resume"
-                    value={resume}
-                    onChange={(e) => setResume(e.target.value)}
-                    required
-                    placeholder="Paste resume text..."
-                    className="h-56 field-sizing-fixed resize-none font-mono text-sm md:h-80"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="jd">Job description</Label>
-                  <Textarea
-                    id="jd"
-                    value={jd}
-                    onChange={(e) => setJd(e.target.value)}
-                    required
-                    placeholder="Paste job description text..."
-                    className="h-56 field-sizing-fixed resize-none font-mono text-sm md:h-80"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" disabled={loading} className="gap-2 font-mono">
-                  {loading && <Loader2 className="size-4 animate-spin" />}
-                  {loading ? "Checking fit..." : "Check fit"}
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
-        )}
+                    {extractWarning && (
+                      <Alert>
+                        <Info className="size-4" />
+                        <AlertDescription>{extractWarning}</AlertDescription>
+                      </Alert>
+                    )}
+                    {extractError && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="size-4" />
+                        <AlertDescription>{extractError}</AlertDescription>
+                      </Alert>
+                    )}
+                    <Textarea
+                      id="resume"
+                      value={resume}
+                      onChange={(e) => setResume(e.target.value)}
+                      required
+                      placeholder="Paste resume text..."
+                      className="h-32 field-sizing-fixed resize-none font-mono text-sm"
+                    />
+                    <Label htmlFor="jd">Job description</Label>
+                    <Textarea
+                      id="jd"
+                      value={jd}
+                      onChange={(e) => setJd(e.target.value)}
+                      required
+                      placeholder="Paste job description text..."
+                      className="h-32 field-sizing-fixed resize-none font-mono text-sm"
+                    />
+                    <Button type="submit" className="mt-1 w-full gap-2 font-mono">
+                      Check fit
+                    </Button>
+                    <p className="text-center text-xs text-muted-foreground">
+                      {isSignedIn
+                        ? "Saved to your history — view past checks anytime."
+                        : "Nothing is stored unless you sign in first."}
+                    </p>
+                  </CardContent>
+                </form>
+              </Card>
+            </header>
 
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="size-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="size-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+          </>
         )}
 
         {report && (
