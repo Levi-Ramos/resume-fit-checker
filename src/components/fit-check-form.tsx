@@ -165,7 +165,7 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex max-w-4xl flex-1 flex-col gap-10 px-6 py-12 md:py-16">
+      <div className="flex flex-1 flex-col gap-10 px-6 py-12 md:px-14 md:py-16">
         {loading ? (
           <CheckingProgress step={checkingStep} />
         ) : report ? (
@@ -206,10 +206,8 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
           </div>
         ) : (
           <>
-            <header className="relative flex flex-col gap-8 overflow-hidden px-4 pt-6 md:flex-row md:items-start md:gap-14 md:pt-10">
-              <div className="aurora aurora-a" aria-hidden="true" />
-              <div className="aurora aurora-b" aria-hidden="true" />
-              <div className="relative z-10 flex flex-col gap-3 md:max-w-xs md:pt-2">
+            <header className="flex flex-col gap-8 md:flex-row md:items-center md:gap-14 md:pt-6">
+              <div className="flex flex-col gap-4 md:w-2/5">
                 <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
                   Check how well your <span className="text-primary">resume fits</span> the job.
                 </h1>
@@ -219,7 +217,7 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
                 </p>
               </div>
 
-              <Card className="relative z-10 max-w-md flex-1 self-start">
+              <Card className="flex-1 [--card-spacing:1.75rem]">
                 <form onSubmit={handleSubmit}>
                   <CardContent className="flex flex-col gap-4">
                     <div className="flex items-center justify-between gap-2">

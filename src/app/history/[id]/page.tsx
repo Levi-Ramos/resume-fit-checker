@@ -27,7 +27,7 @@ export default async function HistoryDetailPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-12 md:py-16">
+      <div className="flex flex-col gap-6 px-6 py-12 md:px-14 md:py-16">
         <Link
           href="/"
           className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"

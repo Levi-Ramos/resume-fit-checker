@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function HistoryDetailLoading() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-12 md:py-16">
+      <div className="flex flex-col gap-6 px-6 py-12 md:px-14 md:py-16">
         <Skeleton className="h-4 w-32" />
 
         <Card>
