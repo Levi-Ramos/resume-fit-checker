@@ -34,7 +34,7 @@ A single page: the user pastes raw resume text and raw job description text into
 
 ## Brand Commitments
 
-Name: "Resume Fit Checker." Tagline used in-product: "Gemini · grounded RAG." Interface is forced dark theme (no light/dark toggle currently), Geist Sans/Mono fonts, shadcn component system.
+Name: "Groundtruth" (formerly "Resume Fit Checker" — renamed Aug 2026; the old name described the category, not the mechanism). Tagline used in-product: "Gemini · grounded RAG." Interface is forced dark theme (no light/dark toggle currently), Geist Sans/Mono fonts, shadcn component system.
 
 ## Evidence on Hand
 

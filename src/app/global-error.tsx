@@ -19,7 +19,7 @@ export default function GlobalError({
       <body className="flex min-h-full items-center justify-center bg-background px-6 text-foreground">
         <div className="flex flex-col items-center gap-3 text-center">
           <p className="font-mono text-sm text-muted-foreground">Error</p>
-          <h1 className="text-2xl font-semibold tracking-tight">Resume Fit Checker crashed</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Groundtruth crashed</h1>
           <p className="max-w-sm text-sm text-muted-foreground">
             Something broke at the top level. Reloading usually fixes it.
           </p>

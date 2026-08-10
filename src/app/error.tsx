@@ -27,7 +27,7 @@ export default function Error({
         <Button variant="outline" onClick={reset}>
           Try again
         </Button>
-        <Button render={<Link href="/">Back to Resume Fit Checker</Link>} />
+        <Button render={<Link href="/">Back to Groundtruth</Link>} />
       </div>
     </div>
   );

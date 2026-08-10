@@ -1,5 +1,5 @@
 ---
-name: Resume Fit Checker
+name: Groundtruth
 description: Grounded, citation-backed resume-to-job-description fit checking with Gemini.
 colors:
   background: "#0b0f0d"
@@ -82,13 +82,13 @@ components:
     padding: "8px 10px"
 ---
 
-# Design System: Resume Fit Checker
+# Design System: Groundtruth
 
 ## Overview
 
 **Creative North Star: "The Diagnostic Readout"**
 
-Resume Fit Checker reads like an instrument panel, not a marketing page: a near-black emerald-tinted canvas, monospace numerals for anything measured, and one saturated color family — signal emerald — spent with intent rather than sprinkled for decoration. The system exists to deliver a verdict the user can trust (match / partial / gap, each with a citation), so the interface stays clinical and calm where it reports data, and reserves warmth for the moment it delivers good news.
+Groundtruth reads like an instrument panel, not a marketing page: a near-black emerald-tinted canvas, monospace numerals for anything measured, and one saturated color family — signal emerald — spent with intent rather than sprinkled for decoration. The system exists to deliver a verdict the user can trust (match / partial / gap, each with a citation), so the interface stays clinical and calm where it reports data, and reserves warmth for the moment it delivers good news.
 
 Color is quiet and restrained by design: the panel/well/border layers of near-black do almost all the visual work, and saturated color is spent only on the primary action and the three verdict states (green = match, amber = partial, red = gap). Nothing else on screen competes with those signals for attention.
 
@@ -108,7 +108,7 @@ The palette is almost monochrome near-black at rest; color appears only to mean 
 - **Signal Emerald** (`#34d399`): the primary action color — the "Check fit" button, focus rings, the nav accent — and, not coincidentally, the same value as the "match" verdict. Emerald means both "go" and "good."
 
 ### Secondary
-- **Deep Emerald** (`#1f9d6f`): a darker shade of the same hue, used only for the hero's aurora glow (paired with Signal Emerald for a two-tone blur). It never appears on an interactive control; it marks the page as a technical surface, not a status.
+- **Deep Emerald** (`#1f9d6f`): a darker shade of the same hue, carried in the token set (`--accent`) as the shadcn-standard accent slot for future components (hover states on menus/selects, etc.) — nothing in the current UI renders it yet. The hero previously had an aurora glow using this + Signal Emerald; it was cut (Aug 2026) for reading as unintentional light on the form card once the hero widened to full-bleed.
 
 ### Neutral
 - **Deep Space** (`#0b0f0d`): page background — near-black with a faint green tint rather than the old blue-black.
@@ -124,7 +124,7 @@ The palette is almost monochrome near-black at rest; color appears only to mean 
 - **Alert Red** (`#e0685f` — same token as Destructive): "gap" / destructive action / form error.
 
 ### Named Rules
-**The Verdict-Only Color Rule.** Outside the primary CTA and the header's aurora flourish, saturated color appears only to report a match/partial/gap verdict or a destructive action. A card, badge, or button that isn't reporting one of those states stays near-black/well/fog.
+**The Verdict-Only Color Rule.** Outside the primary CTA, saturated color appears only to report a match/partial/gap verdict or a destructive action. A card, badge, or button that isn't reporting one of those states stays near-black/well/fog.
 
 ## Typography
 
@@ -148,7 +148,7 @@ The palette is almost monochrome near-black at rest; color appears only to mean 
 
 The app shell is a persistent-sidebar layout, not a single centered column: on desktop (`md:` and up) a collapsible History rail sits flush against the left viewport edge, full height, with the nav bar and page content filling the remaining width. Below `md`, the rail becomes an off-canvas overlay drawer (see Components → Sidebar) reached via a trigger in the nav; the page itself reverts to a plain vertical stack.
 
-Inside the content column, pages stay single-column, content-first: a `max-w-4xl` block centered with `px-6` and generous vertical rhythm (`py-12` → `py-16` at `md:`, `gap-6`–`gap-10` between blocks). The one two-column moment is the empty-state hero (`md:flex-row`): the task headline and subcopy sit to the left, the Resume/JD form card to the right — the two fields inside that card stack vertically now (single column), since the side-by-side moment moved up a level to headline-vs-form. Everything else — the checking screen, the score card, the requirement list — stays single-column so it reads top-to-bottom like a report. Breakpoint behavior is mobile-first with a single `md:` (768px) step-up, stacking the hero into headline-above-form; there is no desktop-specific widening beyond the `max-w-4xl` cap on content.
+Inside the content column, pages are full-bleed, not a fixed-width block: `px-6` → `px-14` at `md:` (mirroring the Claude Design mockup's own 56px canvas gutter) with generous vertical rhythm (`py-12` → `py-16` at `md:`, `gap-6`–`gap-10` between blocks), and no `max-w-*` cap — the content fills whatever room the sidebar leaves. (Earlier versions of this doc capped content at `max-w-4xl`; the Aug 2026 redesign dropped that in favor of matching the mockup's fill ratio at real viewport widths — a hard cap left large dead margins on wide monitors that the mockup, drawn full-bleed, never had.) The one two-column moment is the empty-state hero (`md:flex-row`, `items-center`): the task headline and subcopy sit to the left in a fixed `md:w-2/5` column (40%, not content-sized — it stays proportional to the row rather than shrinking to fit the text), the Resume/JD form card fills the rest (`flex-1`, ~60%) — the two fields inside that card stack vertically now (single column), since the side-by-side moment moved up a level to headline-vs-form. Everything else — the checking screen, the score card, the requirement list — stays single-column so it reads top-to-bottom like a report, full width of the content column. Breakpoint behavior is mobile-first with a single `md:` (768px) step-up, stacking the hero into headline-above-form.
 
 ### Named Rules
 **The Checking Screen.** Submitting the form replaces the hero (headline + form card) with a full-width, vertically-centered takeover: a thin top progress rail plus a 4-step checklist ("Parsing resume" → "Extracting requirements" → "Retrieving evidence" → "Scoring overall fit"). The steps advance on a fixed cosmetic timer, not real backend events — `/api/fit-check` is a single request/response with no intermediate progress to report — so treat the step count as a perceived-progress device, not telemetry. It disappears the moment the request settles, into either the report or an error.
@@ -201,13 +201,10 @@ Interactive controls (buttons, inputs, textareas) use a 12px radius (`rounded-lg
 - **Rows:** each past check is a title line — a user-set rename, falling back to a truncated JD-preview when unset (truncated either way, native `title` tooltip for the full line) — plus a score Badge and a short date, wrapped in a `Link` to its detail page; per-row rename (pencil) and delete icons fade in on hover/focus (`opacity-0` → `opacity-100`) as siblings of the `Link` rather than nested inside it. Renaming swaps the title `Link` for a plain bordered `<input>` inline in the row (no modal — a rename doesn't need one); Enter/blur saves, Escape or an empty submission reverts to the prior title without saving.
 - **States:** signed-out shows a one-line sign-in prompt in place of the list; signed-in-empty shows "No history yet"; a header "Clear all" icon action appears only when there's history to clear.
 
-### Signature Component: The Aurora Backdrop
-A soft, blurred radial-gradient glow (two shades of emerald, `blur(90px)`, ~45% opacity) drifting slowly behind the hero heading and form only — the one purely decorative, non-data element in the system. It respects `prefers-reduced-motion` (animation disabled). Reserve this for the single hero moment; it is not a general-purpose background treatment.
-
 ## Do's and Don'ts
 
 ### Do:
-- **Do** reserve saturated color (emerald/amber/red) for the primary action, the aurora hero flourish, and verdict states — nothing else.
+- **Do** reserve saturated color (emerald/amber/red) for the primary action and verdict states — nothing else.
 - **Do** render any measured number (scores, counts) in mono with `tabular-nums`.
 - **Do** build depth with tonal layering + a `ring-foreground/10` hairline, never a `box-shadow`.
 - **Do** keep the destructive button's fill translucent (Alert Red at 10-20% opacity), not a solid red block.

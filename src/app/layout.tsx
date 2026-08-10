@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Resume Fit Checker",
+  title: "Groundtruth",
   description: "Grounded, citation-backed resume-to-job-description fit checking with Gemini.",
 };
 
@@ -48,7 +48,7 @@ export default function RootLayout({
             <nav className="flex h-14 items-center gap-3 border-b border-border px-3 md:px-6">
               <HistoryDrawerTrigger />
               <Link href="/" className="font-mono text-sm font-medium tracking-tight">
-                Resume Fit Checker
+                Groundtruth
               </Link>
               <div className="ml-auto flex items-center gap-4">
                 <Show when="signed-in">

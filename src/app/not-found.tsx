@@ -9,7 +9,7 @@ export default function NotFound() {
       <p className="max-w-sm text-sm text-muted-foreground">
         That fit check doesn&apos;t exist, or isn&apos;t yours to view.
       </p>
-      <Button className="mt-2" render={<Link href="/">Back to Resume Fit Checker</Link>} />
+      <Button className="mt-2" render={<Link href="/">Back to Groundtruth</Link>} />
     </div>
   );
 }
