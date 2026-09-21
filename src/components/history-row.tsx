@@ -21,6 +21,10 @@ export function HistoryRow({
   score: number;
   createdAt: Date;
 }) {
+  const atIdx = title.indexOf(" @ ");
+  const role = atIdx >= 0 ? title.slice(0, atIdx) : title;
+  const company = atIdx >= 0 ? title.slice(atIdx + 3) : null;
+
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(title);
   const [renameError, setRenameError] = useState<string | null>(null);
@@ -81,11 +85,12 @@ export function HistoryRow({
             className="min-w-0 flex-1 rounded-md border border-ring bg-transparent px-1.5 py-0.5 text-sm outline-none ring-3 ring-ring/50 disabled:opacity-50"
           />
         ) : (
-          <Link href={`/history/${id}`} className="flex min-w-0 flex-1 flex-col gap-1.5">
-            <span className="truncate text-sm" title={title}>
-              {title}
-            </span>
-            <span className="flex items-center gap-2">
+          <Link href={`/history/${id}`} className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="truncate text-sm font-medium leading-snug" title={role}>{role}</span>
+            {company && (
+              <span className="truncate text-xs text-muted-foreground leading-snug" title={company}>{company}</span>
+            )}
+            <span className="mt-0.5 flex items-center gap-2">
               <Badge variant="outline" className="gap-1 font-mono" style={{ color: scoreColorVar(score) }}>
                 {Math.round(score * 100)}%
               </Badge>

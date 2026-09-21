@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
   try {
     const chunks = chunkResume(resume);
-    const [embeddedChunks, requirements] = await Promise.all([
+    const [embeddedChunks, { requirements, meta }] = await Promise.all([
       embedResumeChunks(chunks),
       parseJobDescription(jd),
     ]);
@@ -86,6 +86,7 @@ export async function POST(request: Request) {
           .values({
             userId,
             jdText: jd,
+            title: [meta.role, meta.company].filter(Boolean).join(' @ ') || null,
             score,
             matchCount,
             partialCount,

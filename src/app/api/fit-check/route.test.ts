@@ -74,9 +74,10 @@ function makeRequest(body: unknown) {
 
 beforeEach(() => {
   vi.mocked(auth).mockResolvedValue({ userId: null } as never);
-  vi.mocked(parseJobDescription).mockResolvedValue([
-    { id: 'req-0', text: '5+ years Python', category: 'hard' },
-  ]);
+  vi.mocked(parseJobDescription).mockResolvedValue({
+    requirements: [{ id: 'req-0', text: '5+ years Python', category: 'hard' }],
+    meta: {},
+  });
   vi.mocked(scoreAllRequirements).mockResolvedValue(SCORES);
   mockLimit.mockResolvedValue({ success: true, limit: 10, remaining: 9, reset: Date.now() + 60_000 });
 });
@@ -100,7 +101,7 @@ describe('POST /api/fit-check', () => {
   });
 
   it('returns 400 when JD yields no requirements', async () => {
-    vi.mocked(parseJobDescription).mockResolvedValue([]);
+    vi.mocked(parseJobDescription).mockResolvedValue({ requirements: [], meta: {} });
 
     const res = await POST(makeRequest({ resume: RESUME, jd: JD }));
 
