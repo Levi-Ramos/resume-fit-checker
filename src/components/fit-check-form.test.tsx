@@ -10,6 +10,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@clerk/nextjs', () => ({
   useUser: () => ({ isSignedIn: false }),
+  SignInButton: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 const REPORT: FitReport = {
@@ -87,10 +88,10 @@ describe('FitCheckForm — paste-and-submit (regression)', () => {
     expect(screen.queryByText('Overall fit')).not.toBeInTheDocument();
   });
 
-  it('disables the upload control for signed-out users without blocking paste-and-submit', () => {
+  it('offers sign-in instead of a disabled upload control for signed-out users', () => {
     render(<FitCheckForm />);
 
-    expect(screen.getByRole('button', { name: /upload pdf/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /sign in to upload pdf/i })).toBeEnabled();
     expect(screen.getByLabelText('Resume')).toBeEnabled();
   });
 });

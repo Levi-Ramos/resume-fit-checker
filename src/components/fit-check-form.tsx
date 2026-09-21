@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Check, Info, Loader2, PencilLine, Plus, Upload, X } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -227,25 +227,33 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
                         type="file"
                         accept="application/pdf"
                         onChange={handleFileChange}
-                        disabled={!isSignedIn || extracting}
+                        disabled={extracting}
                         className="hidden"
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="gap-1.5 font-mono"
-                        disabled={!isSignedIn || extracting}
-                        title={!isSignedIn ? "Sign in to upload a resume file" : undefined}
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        {extracting ? (
-                          <Loader2 className="size-3.5 animate-spin" />
-                        ) : (
-                          <Upload className="size-3.5" />
-                        )}
-                        {extracting ? "Extracting..." : "Upload PDF"}
-                      </Button>
+                      {isSignedIn ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5 font-mono"
+                          disabled={extracting}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          {extracting ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <Upload className="size-3.5" />
+                          )}
+                          {extracting ? "Extracting..." : "Upload PDF"}
+                        </Button>
+                      ) : (
+                        <SignInButton mode="modal">
+                          <Button type="button" variant="outline" size="sm" className="gap-1.5 font-mono">
+                            <Upload className="size-3.5" />
+                            Sign in to upload PDF
+                          </Button>
+                        </SignInButton>
+                      )}
                     </div>
                     {isSignedIn && initialResume && resume === initialResume && (
                       <span className="-mt-2 text-xs text-muted-foreground">
