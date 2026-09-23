@@ -36,7 +36,7 @@ export async function HistorySidebar() {
     .limit(50);
 
   return (
-    <HistorySidebarShell headerAction={checks.length > 0 ? <HistoryClearButton /> : undefined}>
+    <HistorySidebarShell headerAction={<HistoryClearButton />}>
       {checks.length === 0 ? (
         <div className="flex flex-col gap-3 px-2 py-4">
           <FileText className="size-4 text-muted-foreground/50" />

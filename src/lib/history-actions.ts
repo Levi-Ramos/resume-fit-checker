@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/db";
 import { fitChecks } from "@/db/schema";
+import { deleteUserData } from "@/db/delete-user-data";
 import { MAX_TITLE_LENGTH } from "@/lib/constants";
 
 export async function deleteFitCheck(id: string) {
@@ -18,11 +19,11 @@ export async function deleteFitCheck(id: string) {
   revalidatePath("/", "layout");
 }
 
-export async function clearFitCheckHistory() {
+export async function deleteMyData() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  await getDb().delete(fitChecks).where(eq(fitChecks.userId, userId));
+  await deleteUserData(userId);
 
   revalidatePath("/", "layout");
 }

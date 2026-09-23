@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { clearFitCheckHistory } from "@/lib/history-actions";
+import { deleteMyData } from "@/lib/history-actions";
 
 export function HistoryClearButton() {
   const [open, setOpen] = useState(false);
@@ -32,16 +32,16 @@ export function HistoryClearButton() {
     >
       <AlertDialogTrigger
         render={
-          <Button variant="ghost" size="icon" aria-label="Clear all history" className="shrink-0">
+          <Button variant="ghost" size="icon" aria-label="Delete my data" className="shrink-0">
             <Trash2 />
           </Button>
         }
       />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Clear all history?</AlertDialogTitle>
+          <AlertDialogTitle>Delete all your data?</AlertDialogTitle>
           <AlertDialogDescription>
-            This permanently deletes every saved fit check for your account. This can&apos;t be undone.
+            This permanently deletes every saved fit check and your saved resume. This can&apos;t be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         {error && (
@@ -57,15 +57,15 @@ export function HistoryClearButton() {
             onClick={() =>
               startTransition(async () => {
                 try {
-                  await clearFitCheckHistory();
+                  await deleteMyData();
                   setOpen(false);
                 } catch {
-                  setError("Couldn't clear history. Please try again.");
+                  setError("Couldn't delete your data. Please try again.");
                 }
               })
             }
           >
-            {isPending ? "Clearing..." : "Clear all"}
+            {isPending ? "Deleting..." : "Delete everything"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
