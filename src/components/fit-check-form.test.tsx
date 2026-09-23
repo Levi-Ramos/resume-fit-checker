@@ -50,6 +50,7 @@ describe('FitCheckForm — paste-and-submit (regression)', () => {
 
     await user.type(screen.getByLabelText('Resume'), 'Senior Engineer with TypeScript experience');
     await user.type(screen.getByLabelText('Job description'), 'Looking for a TypeScript engineer');
+    await user.click(screen.getByRole('checkbox', { name: /google gemini/i }));
     await user.click(screen.getByRole('button', { name: /check fit/i }));
 
     await waitFor(() => expect(screen.getByText('Overall fit')).toBeInTheDocument());
@@ -80,6 +81,7 @@ describe('FitCheckForm — paste-and-submit (regression)', () => {
 
     await user.type(screen.getByLabelText('Resume'), 'Some resume text here');
     await user.type(screen.getByLabelText('Job description'), 'Some job description here');
+    await user.click(screen.getByRole('checkbox', { name: /google gemini/i }));
     await user.click(screen.getByRole('button', { name: /check fit/i }));
 
     await waitFor(() =>

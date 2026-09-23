@@ -65,6 +65,7 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
   const { isSignedIn } = useUser();
   const [resume, setResume] = useState(initialResume);
   const [jd, setJd] = useState("");
+  const [consented, setConsented] = useState(false);
   const [report, setReport] = useState<FitReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [checkingStep, setCheckingStep] = useState(0);
@@ -133,6 +134,11 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
 
     setExtractError(null);
     setExtractWarning(null);
+
+    if (!consented) {
+      setExtractError("Tick the consent box below before uploading — the PDF is sent to Google Gemini.");
+      return;
+    }
 
     if (file.type !== "application/pdf") {
       setExtractError("Only PDF files are supported.");
@@ -289,6 +295,20 @@ export function FitCheckForm({ initialResume = "" }: { initialResume?: string })
                       placeholder="Paste job description text..."
                       className="h-32 field-sizing-fixed resize-none font-mono text-sm"
                     />
+                    <label className="flex items-start gap-2.5 text-xs leading-snug text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={consented}
+                        onChange={(e) => setConsented(e.target.checked)}
+                        required
+                        className="mt-0.5 size-3.5 shrink-0 accent-primary"
+                      />
+                      <span>
+                        I agree my resume is sent to Google Gemini for analysis. Google may use it to improve
+                        its products, and its reviewers may read it. Emails, phone numbers, and links are
+                        removed from the text first, but uploaded PDFs are sent as-is.
+                      </span>
+                    </label>
                     <Button type="submit" className="mt-1 w-full gap-2 font-mono">
                       Check fit
                     </Button>

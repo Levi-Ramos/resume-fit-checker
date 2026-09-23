@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { chunkResume } from '@/lib/chunk';
+import { redactContactInfo } from '@/lib/redact';
 import { embedResumeChunks } from '@/lib/retrieval';
 import { parseJobDescription } from '@/lib/parse-jd';
 import { scoreAllRequirements } from '@/lib/score-fit';
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const chunks = chunkResume(resume);
+    const chunks = chunkResume(redactContactInfo(resume));
     const [embeddedChunks, { requirements, meta }] = await Promise.all([
       embedResumeChunks(chunks),
       parseJobDescription(jd),
